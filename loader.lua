@@ -439,7 +439,7 @@ local function boost()
 	local camera = workspace.CurrentCamera
 
 	local totalTime = 5
-	local speed = 49 -- studs per second
+	local speed = 40 -- studs per second
 	local steps = 30
 	local interval = totalTime / steps
 	local distancePerStep = speed * interval
