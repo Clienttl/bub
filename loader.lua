@@ -464,222 +464,6 @@ local Button = Main:CreateButton({
 		boost()
 	end,
 })
-local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
-
-local specialTweening = false
-local tweenConnection
-local createdPart
-
-local targetPos = Vector3.new(-409.9736022949219, 10.99802017211914, -137.55050659179688)
-local partPos = Vector3.new(-409.9736022949219, 30, -137.55050659179688)
-
-local function tweenToPosition(hrp, position, speed)
-	local distance = (hrp.Position - position).Magnitude
-	local time = distance / speed
-	local tweenInfo = TweenInfo.new(time, Enum.EasingStyle.Linear)
-	local tween = TweenService:Create(hrp, tweenInfo, {CFrame = CFrame.new(position)})
-	tween:Play()
-	return tween
-end
-
-local function cleanup(char)
-	if tweenConnection then
-		tweenConnection:Disconnect()
-		tweenConnection = nil
-	end
-	if createdPart then
-		createdPart:Destroy()
-		createdPart = nil
-	end
-
-	if char then
-		local humanoid = char:FindFirstChildOfClass("Humanoid")
-		local hrp = char:FindFirstChild("HumanoidRootPart")
-		if humanoid then
-			humanoid.PlatformStand = false
-		end
-		if hrp then
-			hrp.Anchored = false
-		end
-	end
-end
-
-local function specialTween()
-	local player = game.Players.LocalPlayer
-	local char = player.Character or player.CharacterAdded:Wait()
-	local hrp = char:WaitForChild("HumanoidRootPart")
-	local humanoid = char:WaitForChild("Humanoid")
-
-	-- Lock player in place
-	humanoid.PlatformStand = true
-	hrp.Anchored = true
-
-	-- Tween to targetPos at speed 30
-	local tween1 = tweenToPosition(hrp, targetPos, 30)
-	local tweenDone = false
-
-	tween1.Completed:Connect(function()
-		tweenDone = true
-	end)
-
-	while not tweenDone and specialTweening do
-		RunService.Heartbeat:Wait()
-	end
-	if not specialTweening then 
-		return cleanup(char) 
-	end
-
-	-- Create the part above
-	createdPart = Instance.new("Part")
-	createdPart.Anchored = true
-	createdPart.CanCollide = false
-	createdPart.Transparency = 0.5
-	createdPart.Size = Vector3.new(4, 1, 4)
-	createdPart.Position = partPos
-	createdPart.Parent = workspace
-
-	-- Teleport player slightly above the part (1.5 studs up)
-	hrp.CFrame = CFrame.new(partPos + Vector3.new(0, 1.5, 0))
-
-	-- Tween back down to targetPos at speed 35
-	local tween2 = tweenToPosition(hrp, targetPos, 35)
-	tweenDone = false
-
-	tween2.Completed:Connect(function()
-		tweenDone = true
-	end)
-
-	while not tweenDone and specialTweening do
-		RunService.Heartbeat:Wait()
-	end
-
-	if not specialTweening then 
-		return cleanup(char) 
-	end
-
-	cleanup(char)
-end
-
-local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
-
-local specialTweening = false
-local createdPart
-local finalAnchor
-local activeTweens = {}
-
-local targetPos = Vector3.new(-409.9736022949219, 10.99802017211914, -137.55050659179688)
-local partPos = Vector3.new(-409.9736022949219, 30, -137.55050659179688)
-
-local function cancelTweens()
-	for _, tween in ipairs(activeTweens) do
-		if tween then tween:Cancel() end
-	end
-	activeTweens = {}
-end
-
-local function cleanup(char)
-	cancelTweens()
-
-	if createdPart then
-		createdPart:Destroy()
-		createdPart = nil
-	end
-	if finalAnchor then
-		finalAnchor:Destroy()
-		finalAnchor = nil
-	end
-
-	if char then
-		local humanoid = char:FindFirstChildOfClass("Humanoid")
-		if humanoid then
-			humanoid.PlatformStand = false
-		end
-	end
-end
-
-local function tweenToPosition(hrp, position, speed)
-	local distance = (hrp.Position - position).Magnitude
-	local time = distance / speed
-	local tweenInfo = TweenInfo.new(time, Enum.EasingStyle.Linear)
-	local tween = TweenService:Create(hrp, tweenInfo, {CFrame = CFrame.new(position)})
-	table.insert(activeTweens, tween)
-	tween:Play()
-	return tween, time
-end
-
-local function specialTween()
-	local player = game.Players.LocalPlayer
-	local char = player.Character or player.CharacterAdded:Wait()
-	local hrp = char:WaitForChild("HumanoidRootPart")
-	local humanoid = char:WaitForChild("Humanoid")
-
-	humanoid.PlatformStand = true
-
-	-- Tween to ground safe pos
-	local tween1, time1 = tweenToPosition(hrp, targetPos, 25)
-	wait(time1)
-	if not specialTweening then return cleanup(char) end
-
-	-- Create floating platform
-	createdPart = Instance.new("Part")
-	createdPart.Anchored = true
-	createdPart.CanCollide = false
-	createdPart.Transparency = 0.5
-	createdPart.Size = Vector3.new(4, 1, 4)
-	createdPart.Position = partPos
-	createdPart.Parent = workspace
-
-	-- Teleport to top of platform
-	hrp.CFrame = CFrame.new(partPos + Vector3.new(0, 1.5, 0))
-	wait(0.1)
-
-	if not specialTweening then return cleanup(char) end
-
-	-- Tween back down
-	local tween2, time2 = tweenToPosition(hrp, targetPos, 20)
-	wait(time2)
-	if not specialTweening then return cleanup(char) end
-
-	-- Lock in place with invisible anchor part welded to HRP
-	finalAnchor = Instance.new("Part")
-	finalAnchor.Size = Vector3.new(2, 1, 2)
-	finalAnchor.Transparency = 1
-	finalAnchor.Anchored = true
-	finalAnchor.CanCollide = false
-	finalAnchor.Position = hrp.Position
-	finalAnchor.Parent = workspace
-
-	local weld = Instance.new("WeldConstraint")
-	weld.Part0 = finalAnchor
-	weld.Part1 = hrp
-	weld.Parent = finalAnchor
-
-	hrp.Velocity = Vector3.zero
-	hrp.RotVelocity = Vector3.zero
-end
-
-local Toggle4 = Main:CreateToggle({
-	Name = "Safespot",
-	CurrentValue = false,
-	Flag = "Toggle4",
-	Callback = function(Value)
-		specialTweening = Value
-		local player = game.Players.LocalPlayer
-		local char = player.Character
-		if not char then
-			char = player.CharacterAdded:Wait()
-		end
-
-		if specialTweening then
-			spawn(specialTween)
-		else
-			cleanup(char)
-		end
-	end,
-})
-
 local Button = Autobuy:CreateButton({
    Name = "La Vacca Saturno Saturnita",
    Callback = function()
@@ -1033,4 +817,76 @@ local TogglePBat = Troll:CreateToggle({
 		end
 	end,
 })
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local Debris = game:GetService("Debris")
 
+local infJumpEnabled = false
+local jumpTween
+local jumpingLoop
+
+local function doJumpLoop()
+	local player = Players.LocalPlayer
+	local character = player.Character or player.CharacterAdded:Wait()
+	local hrp = character:WaitForChild("HumanoidRootPart")
+
+	jumpingLoop = RunService.Heartbeat:Connect(function()
+		if not infJumpEnabled then return end
+		if jumpTween and jumpTween.PlaybackState == Enum.PlaybackState.Playing then return end
+
+		local currentPos = hrp.Position
+		local targetPos = currentPos + Vector3.new(0, 60, 0)
+		local duration = 60 / 30 -- 30 studs/sec
+
+		jumpTween = TweenService:Create(hrp, TweenInfo.new(duration, Enum.EasingStyle.Linear), {
+			CFrame = CFrame.new(targetPos)
+		})
+		jumpTween:Play()
+	end)
+end
+
+local function stopJumpLoop()
+	if jumpTween then
+		jumpTween:Cancel()
+		jumpTween = nil
+	end
+	if jumpingLoop then
+		jumpingLoop:Disconnect()
+		jumpingLoop = nil
+	end
+
+	-- Create landing platform
+	local player = Players.LocalPlayer
+	local character = player.Character
+	if not character then return end
+	local hrp = character:FindFirstChild("HumanoidRootPart")
+	if not hrp then return end
+
+	local platform = Instance.new("Part")
+	platform.Size = Vector3.new(8, 1, 8)
+	platform.Anchored = true
+	platform.CanCollide = true
+	platform.Position = Vector3.new(hrp.Position.X, hrp.Position.Y - 3.5, hrp.Position.Z)
+	platform.Name = "InfJumpLanding"
+	platform.BrickColor = BrickColor.new("Bright yellow")
+	platform.Transparency = 0.2
+	platform.Parent = workspace
+
+	-- Auto-delete after 5 seconds
+	Debris:AddItem(platform, 5)
+end
+
+local ToggleInfJump = Main:CreateToggle({
+	Name = "InfJump",
+	CurrentValue = false,
+	Flag = "ToggleInfJump",
+	Callback = function(Value)
+		infJumpEnabled = Value
+		if Value then
+			doJumpLoop()
+		else
+			stopJumpLoop()
+		end
+	end,
+})
