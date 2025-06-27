@@ -38,9 +38,11 @@ local Window = Rayfield:CreateWindow({
 local Main = Window:CreateTab("Main", "align-justify")
 local Anti = Window:CreateTab("Anti", "badge-alert")
 local Troll = Window:CreateTab("Troll", "annoyed")
+local Autobuy = Window:CreateTab("Autobuy", "badge-cent")
 local Section = Main:CreateSection("Synergy")
 local Section = Anti:CreateSection("Synergy")
 local Section = Troll:CreateSection("Synergy")
+local Section = Autobuy:CreateSection("Synergy")
 Rayfield:Notify({
    Title = "Synergy V2",
    Content = "Loaded",
@@ -678,3 +680,291 @@ local Toggle4 = Main:CreateToggle({
 	end,
 })
 
+local Button = Autobuy:CreateButton({
+   Name = "La Vacca Saturno Saturnita",
+   Callback = function()
+   local s1=game:GetService("TweenService")
+local s2=game:GetService("Workspace")
+local s3=game:GetService("Players")
+local s4=game:GetService("RunService")
+local p=s3.LocalPlayer
+local function f1()
+    if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+        return p.Character.HumanoidRootPart
+    else
+        p.CharacterAdded:Wait()
+        return p.Character:WaitForChild("HumanoidRootPart")
+    end
+end
+local v1=30
+local v2=s2:WaitForChild("RenderedMovingAnimals")
+local v3="La Vacca Saturno Saturnita"
+local v4=nil
+local function f2(pos)
+    if v4 then
+        v4:Cancel()
+        v4=nil
+    end
+    local r=f1()
+    local d=(r.Position-pos).Magnitude
+    local t=d/v1
+    local i=TweenInfo.new(t,Enum.EasingStyle.Linear)
+    v4=s1:Create(r,i,{CFrame=CFrame.new(pos+Vector3.new(0,3,0))})
+    v4:Play()
+end
+local v5=3
+local v6={}
+local function f3(pr)
+    local n=tick()
+    if not v6[pr] or n-v6[pr]>=v5 then
+        v6[pr]=n
+        pr:InputHoldBegin()
+        wait(2)
+        pr:InputHoldEnd()
+    end
+end
+local v7={}
+local v8=3
+local v9=0
+while true do
+    local r=f1()
+    local m=v2:FindFirstChild(v3)
+    if m then
+        local frp=m:FindFirstChild("FakeRootPart")
+        if frp and frp:IsA("BasePart") then
+            f2(frp.Position)
+        end
+    end
+    local n=tick()
+    if n-v9>v8 then
+        v7={}
+        for _,obj in ipairs(s2:GetDescendants())do
+            if obj:IsA("ProximityPrompt")then
+                table.insert(v7,obj)
+            end
+        end
+        v9=n
+    end
+    for _,pr in ipairs(v7)do
+        coroutine.wrap(f3)(pr)
+    end
+    wait(0.1)
+end
+   end,
+})
+local Button = Autobuy:CreateButton({
+   Name = "Los Tralaleritos",
+   Callback = function()
+   local s1=game:GetService("TweenService")
+local s2=game:GetService("Workspace")
+local s3=game:GetService("Players")
+local s4=game:GetService("RunService")
+local p=s3.LocalPlayer
+local function f1()
+    if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+        return p.Character.HumanoidRootPart
+    else
+        p.CharacterAdded:Wait()
+        return p.Character:WaitForChild("HumanoidRootPart")
+    end
+end
+local v1=30
+local v2=s2:WaitForChild("RenderedMovingAnimals")
+local v3="Los Tralaleritos"
+local v4=nil
+local function f2(pos)
+    if v4 then
+        v4:Cancel()
+        v4=nil
+    end
+    local r=f1()
+    local d=(r.Position-pos).Magnitude
+    local t=d/v1
+    local i=TweenInfo.new(t,Enum.EasingStyle.Linear)
+    v4=s1:Create(r,i,{CFrame=CFrame.new(pos+Vector3.new(0,3,0))})
+    v4:Play()
+end
+local v5=3
+local v6={}
+local function f3(pr)
+    local n=tick()
+    if not v6[pr] or n-v6[pr]>=v5 then
+        v6[pr]=n
+        pr:InputHoldBegin()
+        wait(2)
+        pr:InputHoldEnd()
+    end
+end
+local v7={}
+local v8=3
+local v9=0
+while true do
+    local r=f1()
+    local m=v2:FindFirstChild(v3)
+    if m then
+        local frp=m:FindFirstChild("FakeRootPart")
+        if frp and frp:IsA("BasePart") then
+            f2(frp.Position)
+        end
+    end
+    local n=tick()
+    if n-v9>v8 then
+        v7={}
+        for _,obj in ipairs(s2:GetDescendants())do
+            if obj:IsA("ProximityPrompt")then
+                table.insert(v7,obj)
+            end
+        end
+        v9=n
+    end
+    for _,pr in ipairs(v7)do
+        coroutine.wrap(f3)(pr)
+    end
+    wait(0.1)
+end
+   end,
+})
+local Button = Autobuy:CreateButton({
+   Name = "Graipuss Medussi",
+   Callback = function()
+   local s1=game:GetService("TweenService")
+local s2=game:GetService("Workspace")
+local s3=game:GetService("Players")
+local s4=game:GetService("RunService")
+local p=s3.LocalPlayer
+local function f1()
+    if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+        return p.Character.HumanoidRootPart
+    else
+        p.CharacterAdded:Wait()
+        return p.Character:WaitForChild("HumanoidRootPart")
+    end
+end
+local v1=30
+local v2=s2:WaitForChild("RenderedMovingAnimals")
+local v3="Graipuss Medussi"
+local v4=nil
+local function f2(pos)
+    if v4 then
+        v4:Cancel()
+        v4=nil
+    end
+    local r=f1()
+    local d=(r.Position-pos).Magnitude
+    local t=d/v1
+    local i=TweenInfo.new(t,Enum.EasingStyle.Linear)
+    v4=s1:Create(r,i,{CFrame=CFrame.new(pos+Vector3.new(0,3,0))})
+    v4:Play()
+end
+local v5=3
+local v6={}
+local function f3(pr)
+    local n=tick()
+    if not v6[pr] or n-v6[pr]>=v5 then
+        v6[pr]=n
+        pr:InputHoldBegin()
+        wait(2)
+        pr:InputHoldEnd()
+    end
+end
+local v7={}
+local v8=3
+local v9=0
+while true do
+    local r=f1()
+    local m=v2:FindFirstChild(v3)
+    if m then
+        local frp=m:FindFirstChild("FakeRootPart")
+        if frp and frp:IsA("BasePart") then
+            f2(frp.Position)
+        end
+    end
+    local n=tick()
+    if n-v9>v8 then
+        v7={}
+        for _,obj in ipairs(s2:GetDescendants())do
+            if obj:IsA("ProximityPrompt")then
+                table.insert(v7,obj)
+            end
+        end
+        v9=n
+    end
+    for _,pr in ipairs(v7)do
+        coroutine.wrap(f3)(pr)
+    end
+    wait(0.1)
+end
+   end,
+})
+local Button = Autobuy:CreateButton({
+   Name = "La Grande Combinazione",
+   Callback = function()
+   local s1=game:GetService("TweenService")
+local s2=game:GetService("Workspace")
+local s3=game:GetService("Players")
+local s4=game:GetService("RunService")
+local p=s3.LocalPlayer
+local function f1()
+    if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+        return p.Character.HumanoidRootPart
+    else
+        p.CharacterAdded:Wait()
+        return p.Character:WaitForChild("HumanoidRootPart")
+    end
+end
+local v1=30
+local v2=s2:WaitForChild("RenderedMovingAnimals")
+local v3="La Grande Combinazione"
+local v4=nil
+local function f2(pos)
+    if v4 then
+        v4:Cancel()
+        v4=nil
+    end
+    local r=f1()
+    local d=(r.Position-pos).Magnitude
+    local t=d/v1
+    local i=TweenInfo.new(t,Enum.EasingStyle.Linear)
+    v4=s1:Create(r,i,{CFrame=CFrame.new(pos+Vector3.new(0,3,0))})
+    v4:Play()
+end
+local v5=3
+local v6={}
+local function f3(pr)
+    local n=tick()
+    if not v6[pr] or n-v6[pr]>=v5 then
+        v6[pr]=n
+        pr:InputHoldBegin()
+        wait(2)
+        pr:InputHoldEnd()
+    end
+end
+local v7={}
+local v8=3
+local v9=0
+while true do
+    local r=f1()
+    local m=v2:FindFirstChild(v3)
+    if m then
+        local frp=m:FindFirstChild("FakeRootPart")
+        if frp and frp:IsA("BasePart") then
+            f2(frp.Position)
+        end
+    end
+    local n=tick()
+    if n-v9>v8 then
+        v7={}
+        for _,obj in ipairs(s2:GetDescendants())do
+            if obj:IsA("ProximityPrompt")then
+                table.insert(v7,obj)
+            end
+        end
+        v9=n
+    end
+    for _,pr in ipairs(v7)do
+        coroutine.wrap(f3)(pr)
+    end
+    wait(0.1)
+end
+   end,
+})
