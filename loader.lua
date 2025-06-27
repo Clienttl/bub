@@ -890,3 +890,36 @@ local ToggleInfJump = Main:CreateToggle({
 		end
 	end,
 })
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Net = ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Net")
+local RequestBuy = Net:WaitForChild("RF/CoinsShopService/RequestBuy")
+
+local buyOptions = {
+	"Slap", "Speed Coil", "Trap", "Iron Slap", "Gravity Coil", "Bee Launcher",
+	"Gold Slap", "Coil Combo", "Rage Table", "Diamond Slap", "Grapple Hook", "Taser Gun",
+	"Emerald Slap", "Invisibility Cloak", "Boogie Bomb", "Ruby Slap", "Medusa's Head",
+	"Dark Matter Slap", "Web Slinger", "Flame Slap", "Quantum Cloner", "All Seeing Sentry",
+	"Nuclear Slap", "Rainbowrath Sword", "Galaxy Slap", "Laser Cape", "Glitched Slap",
+	"Body Swap Potion"
+}
+
+local Dropdown = Main:CreateDropdown({
+	Name = "Buy Item",
+	Options = buyOptions,
+	CurrentOption = {buyOptions[1]},
+	MultipleOptions = false,
+	Flag = "DropdownBuyItem",
+	Callback = function(Options)
+		local selectedItem = Options[1]
+		if selectedItem then
+			local success, result = pcall(function()
+				return RequestBuy:InvokeServer(selectedItem)
+			end)
+			if success then
+				print("Bought:", selectedItem, "→", result)
+			else
+				warn("Failed to buy:", selectedItem, "→", result)
+			end
+		end
+	end,
+})
