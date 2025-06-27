@@ -425,3 +425,40 @@ local Toggle3 = Troll:CreateToggle({
 	end,
 })
 
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local boosting = false
+
+local function boost()
+	if boosting then return end
+	boosting = true
+
+	local player = game.Players.LocalPlayer
+	local char = player.Character or player.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+	local camera = workspace.CurrentCamera
+
+	local totalTime = 5
+	local speed = 49 -- studs per second
+	local steps = 30
+	local interval = totalTime / steps
+	local distancePerStep = speed * interval
+
+	for i = 1, steps do
+		if not boosting then break end
+		local direction = camera.CFrame.LookVector.Unit
+		local newPosition = hrp.Position + direction * distancePerStep
+		local tween = TweenService:Create(hrp, TweenInfo.new(interval, Enum.EasingStyle.Linear), {CFrame = CFrame.new(newPosition)})
+		tween:Play()
+		tween.Completed:Wait()
+	end
+
+	boosting = false
+end
+
+local Button = Main:CreateButton({
+	Name = "Boost",
+	Callback = function()
+		boost()
+	end,
+})
