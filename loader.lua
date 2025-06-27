@@ -361,7 +361,7 @@ local function startFollowing()
 		if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
 			local targetHRP = target.Character.HumanoidRootPart
 			local distance = (targetHRP.Position - hrp.Position).Magnitude
-			local speed = 20
+			local speed = 40
 			local time = distance / speed
 
 			local tweenInfo = TweenInfo.new(time, Enum.EasingStyle.Linear)
