@@ -256,6 +256,100 @@ local Button = Main:CreateButton({
    loadstring(game:HttpGet("https://pastebin.fi/r/qjLPAGd", true))()
    end,
 })
+local Button = Main:CreateButton({
+   Name = "TpClick [V]",
+   Callback = function()
+   local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+
+local teleportKey = Enum.KeyCode.V
+local travelSpeed = 25 -- studs per second
+
+-- Helper: Hide character visuals
+local function setCharacterVisible(character, visible)
+	for _, obj in ipairs(character:GetDescendants()) do
+		if obj:IsA("BasePart") or obj:IsA("Decal") then
+			obj.Transparency = visible and 0 or 1
+		elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") then
+			obj.Enabled = visible
+		end
+	end
+end
+
+-- Create a marker part at target position
+local function createTeleportMarker(position)
+	local part = Instance.new("Part")
+	part.Anchored = true
+	part.CanCollide = false
+	part.Size = Vector3.new(2, 0.2, 2)
+	part.Position = position + Vector3.new(0, 0.1, 0) -- Just above ground
+	part.BrickColor = BrickColor.new("Really red")
+	part.Material = Enum.Material.Neon
+	part.Name = "TeleportMarker"
+	part.Parent = workspace
+	return part
+end
+
+local function teleportToCursor()
+	local character = player.Character or player.CharacterAdded:Wait()
+	local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+	-- Raycast to find target position
+	local unitRay = mouse.UnitRay
+	local raycastParams = RaycastParams.new()
+	raycastParams.FilterDescendantsInstances = {character}
+	raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+	raycastParams.IgnoreWater = true
+
+	local raycastResult = workspace:Raycast(unitRay.Origin, unitRay.Direction * 1000, raycastParams)
+
+	if raycastResult then
+		local targetPosition = raycastResult.Position
+		local distance = (targetPosition - humanoidRootPart.Position).Magnitude
+		local travelTime = distance / travelSpeed
+
+		-- Create teleport marker
+		local marker = createTeleportMarker(targetPosition)
+
+		-- Hide the character
+		setCharacterVisible(character, false)
+
+		-- Tween to the target
+		local tweenInfo = TweenInfo.new(
+			travelTime,
+			Enum.EasingStyle.Quad,
+			Enum.EasingDirection.InOut
+		)
+
+		local tween = TweenService:Create(humanoidRootPart, tweenInfo, {
+			CFrame = CFrame.new(targetPosition)
+		})
+
+		tween:Play()
+
+		-- Wait for the tween to finish
+		tween.Completed:Wait()
+
+		-- Show the character again and clean up
+		setCharacterVisible(character, true)
+		marker:Destroy()
+	end
+end
+
+-- Listen for key press
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+	if gameProcessed then return end
+	if input.KeyCode == teleportKey then
+		teleportToCursor()
+	end
+end)
+
+   end,
+})
 local Button = Troll:CreateButton({
    Name = "TouchFling",
    Callback = function()
