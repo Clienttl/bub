@@ -968,3 +968,69 @@ while true do
 end
    end,
 })
+local pbatWeld
+local equippedTool
+
+local function equipBat()
+	local player = game.Players.LocalPlayer
+	local char = player.Character or player.CharacterAdded:Wait()
+	local backpack = player:WaitForChild("Backpack")
+	local tool = backpack:FindFirstChild("Tung Bat")
+
+	if not tool then return end
+	tool.Parent = char
+	equippedTool = tool
+
+	-- Wait for handle and grip to exist
+	local handle = tool:WaitForChild("Handle", 2)
+	task.wait(0.2)
+
+	-- Remove Motor6D grip if it exists
+	local grip = char:FindFirstChild("RightGrip") or handle:FindFirstChildWhichIsA("Motor6D")
+	if grip then
+		grip:Destroy()
+	end
+
+	-- Weld to leg instead
+	local leg = char:FindFirstChild("Right Leg") or char:FindFirstChild("RightLowerLeg")
+	if handle and leg then
+		handle.Anchored = false
+
+		handle.CFrame = leg.CFrame * CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(90), 0, 0)
+
+		pbatWeld = Instance.new("WeldConstraint")
+		pbatWeld.Part0 = handle
+		pbatWeld.Part1 = leg
+		pbatWeld.Parent = handle
+	end
+end
+
+local function unequipBat()
+	if pbatWeld then
+		pbatWeld:Destroy()
+		pbatWeld = nil
+	end
+
+	local player = game.Players.LocalPlayer
+	local char = player.Character
+	local backpack = player:FindFirstChild("Backpack")
+
+	if equippedTool and backpack then
+		equippedTool.Parent = backpack
+	end
+	equippedTool = nil
+end
+
+local TogglePBat = Troll:CreateToggle({
+	Name = "BreakBat",
+	CurrentValue = false,
+	Flag = "TogglePBat",
+	Callback = function(Value)
+		if Value then
+			equipBat()
+		else
+			unequipBat()
+		end
+	end,
+})
+
