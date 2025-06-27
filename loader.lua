@@ -323,8 +323,10 @@ local Toggle = Main:CreateToggle({
         end
     end,
 })
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 local following = false
-local followConnection
+local followLoop
 
 local function getNearestPlayer()
 	local localPlayer = game.Players.LocalPlayer
@@ -348,25 +350,31 @@ local function getNearestPlayer()
 end
 
 local function startFollowing()
-	followConnection = game:GetService("RunService").Heartbeat:Connect(function()
-		local localPlayer = game.Players.LocalPlayer
-		local char = localPlayer.Character
-		if not char or not char:FindFirstChild("HumanoidRootPart") or not char:FindFirstChild("Humanoid") then return end
+	followLoop = RunService.Heartbeat:Connect(function()
+		local player = game.Players.LocalPlayer
+		local char = player.Character
+		if not char or not char:FindFirstChild("HumanoidRootPart") then return end
 
+		local hrp = char.HumanoidRootPart
 		local target = getNearestPlayer()
+
 		if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-			local myHRP = char.HumanoidRootPart
 			local targetHRP = target.Character.HumanoidRootPart
-			local direction = (targetHRP.Position - myHRP.Position).Unit
-			char.Humanoid:Move(direction, false)
+			local distance = (targetHRP.Position - hrp.Position).Magnitude
+			local speed = 20
+			local time = distance / speed
+
+			local tweenInfo = TweenInfo.new(time, Enum.EasingStyle.Linear)
+			local tween = TweenService:Create(hrp, tweenInfo, {CFrame = CFrame.new(targetHRP.Position)})
+			tween:Play()
 		end
 	end)
 end
 
 local function stopFollowing()
-	if followConnection then
-		followConnection:Disconnect()
-		followConnection = nil
+	if followLoop then
+		followLoop:Disconnect()
+		followLoop = nil
 	end
 end
 
