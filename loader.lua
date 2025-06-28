@@ -39,10 +39,12 @@ local Main = Window:CreateTab("Main", "align-justify")
 local Anti = Window:CreateTab("Anti", "badge-alert")
 local Troll = Window:CreateTab("Troll", "annoyed")
 local Autobuy = Window:CreateTab("Autobuy", "badge-cent")
+local Other = Window:CreateTab("Other", "archive-restore")
 local Section = Main:CreateSection("Synergy")
 local Section = Anti:CreateSection("Synergy")
 local Section = Troll:CreateSection("Synergy")
 local Section = Autobuy:CreateSection("Synergy")
+local Section = Other:CreateSection("Synergy")
 Rayfield:Notify({
    Title = "Synergy V2",
    Content = "Loaded",
@@ -1016,4 +1018,39 @@ local Dropdown = Main:CreateDropdown({
 			end
 		end
 	end,
+})
+local secretNames = {
+    "La Vacca Saturno Saturnita",
+    "Los Tralaleritos",
+    "Graipuss Medussi",
+    "La Grande Combinazione"
+}
+
+-- Notification function
+local function sendNotification(name)
+    for i = 1, 3 do
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Secret found in this server",
+            Text = name,
+            Duration = 3
+        })
+        wait(0.5)
+    end
+end
+
+-- Toggle
+local Toggle = Other:CreateToggle({
+    Name = "Secret Detector",
+    CurrentValue = false,
+    Flag = "ToggleSecretDetector",
+    Callback = function(Value)
+        if Value then
+            for _, secretName in ipairs(secretNames) do
+                local secret = workspace:FindFirstChild(secretName)
+                if secret then
+                    sendNotification(secretName)
+                end
+            end
+        end
+    end,
 })
