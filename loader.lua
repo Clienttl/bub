@@ -1054,3 +1054,83 @@ local Toggle = Other:CreateToggle({
         end
     end,
 })
+
+local players = game:GetService("Players")
+local localPlayer = players.LocalPlayer
+
+local visualTags = {} -- Store visual text objects
+local active = false  -- Toggle state
+
+local function createFloatingText(part)
+    local adornment = Instance.new("BillboardGui")
+    adornment.Name = "BaseTimerLabel"
+    adornment.Adornee = part
+    adornment.Size = UDim2.new(0, 100, 0, 30)
+    adornment.StudsOffset = Vector3.new(0, 10, 0)
+    adornment.AlwaysOnTop = true
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextScaled = true
+    textLabel.Text = "..."
+    textLabel.TextColor3 = Color3.new(1, 1, 0)
+    textLabel.Font = Enum.Font.GothamBold
+    textLabel.Parent = adornment
+
+    adornment.Parent = game.CoreGui
+    return adornment, textLabel
+end
+
+local function updateTimers()
+    local plotsFolder = workspace:FindFirstChild("Plots")
+    if not plotsFolder then return end
+
+    for _, group in pairs(plotsFolder:GetChildren()) do
+        local timerLabel = group:FindFirstChild("Purchases") and
+                           group.Purchases:FindFirstChild("PlotBlock") and
+                           group.Purchases.PlotBlock:FindFirstChild("Main") and
+                           group.Purchases.PlotBlock.Main:FindFirstChild("BillboardGui") and
+                           group.Purchases.PlotBlock.Main.BillboardGui:FindFirstChild("RemainingTime")
+
+        if timerLabel and timerLabel:IsA("TextLabel") then
+            local existing = visualTags[group]
+
+            if not existing then
+                local part = group.Purchases.PlotBlock.Main
+                local gui, label = createFloatingText(part)
+                visualTags[group] = {gui = gui, label = label}
+            end
+
+            if visualTags[group] then
+                visualTags[group].label.Text = timerLabel.Text
+            end
+        end
+    end
+end
+
+-- Toggle
+local TimerToggle = Other:CreateToggle({
+    Name = "Base Timers",
+    CurrentValue = false,
+    Flag = "ToggleBaseTimers",
+    Callback = function(Value)
+        active = Value
+        if Value then
+            task.spawn(function()
+                while active do
+                    updateTimers()
+                    wait(0.1) -- refresh every 1 second
+                end
+            end)
+        else
+            for _, data in pairs(visualTags) do
+                if data.gui and data.gui.Parent then
+                    data.gui:Destroy()
+                end
+            end
+            table.clear(visualTags)
+        end
+    end,
+})
+
