@@ -40,11 +40,13 @@ local Anti = Window:CreateTab("Anti", "badge-alert")
 local Troll = Window:CreateTab("Troll", "annoyed")
 local Autobuy = Window:CreateTab("Autobuy", "badge-cent")
 local Other = Window:CreateTab("Other", "archive-restore")
+local Steal = Window:CreateTab("Steal", "shopping-bag")
 local Section = Main:CreateSection("Synergy")
 local Section = Anti:CreateSection("Synergy")
 local Section = Troll:CreateSection("Synergy")
 local Section = Autobuy:CreateSection("Synergy")
 local Section = Other:CreateSection("Synergy")
+local Section = Steal:CreateSection("Synergy")
 Rayfield:Notify({
    Title = "Synergy V2",
    Content = "Loaded",
@@ -1133,4 +1135,34 @@ local TimerToggle = Other:CreateToggle({
         end
     end,
 })
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
 
+local upTweenInfo = TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+local downTweenInfo = TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+
+Steal:CreateToggle({
+   Name = "SkySteal",
+   CurrentValue = false,
+   Flag = "Toggle1",
+   Callback = function(Value)
+      -- Refresh HRP in case character respawns
+      character = player.Character or player.CharacterAdded:Wait()
+      hrp = character:WaitForChild("HumanoidRootPart")
+
+      if Value then
+         -- Tween up 500 studs
+         local goal = { CFrame = hrp.CFrame + Vector3.new(0, 170, 0) }
+         local tweenUp = TweenService:Create(hrp, upTweenInfo, goal)
+         tweenUp:Play()
+      else
+         -- Tween down 200 studs
+         local goal = { CFrame = hrp.CFrame - Vector3.new(0, 180, 0) }
+         local tweenDown = TweenService:Create(hrp, downTweenInfo, goal)
+         tweenDown:Play()
+      end
+   end,
+})
